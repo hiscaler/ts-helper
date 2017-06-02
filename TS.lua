@@ -1,6 +1,6 @@
 -- TouchSprite 工具函数
 -- author hiscaler <hiscaler@gmail.com>
-
+require("Util")
 TS = {}
 
 -- 等待延迟
@@ -130,7 +130,7 @@ function TS.clickTextInput(index, x, y, milliseconds)
 	mSleep(milliseconds)
 end
 
--- 清楚文本输入框中的内容（先需要获取焦点）
+-- 清除文本输入框中的内容（先需要获取焦点）
 -- len 需要清理的文本长度
 function TS.clearTextInput(len)
 	len = len or 40
@@ -139,10 +139,47 @@ function TS.clearTextInput(len)
 	end	
 end
 
+function TS.inputText(text, simulation)
+	simulation = simulation or true		
+	if simulation then
+		TS.simulationHumanInputText(text)
+	else
+		inputText(text)
+	end	
+end
+
+-- 模拟点击 IOS 输入法键位
+function TS.clickIOSIMEKey(key)
+	if key ~= nil then
+		if key == 'enter' then
+			x, y = findMultiColorInRegionFuzzy(11252670, "36|-5|0x000000,59|-1|0x323538,83|-1|0x050606,84|15|0x979ea8,84|16|0x000000,110|4|0xabb3be", 90, 0, 0, 639, 1135)
+			TS.touchDownUp(ni, x, y, 50)
+		end
+	end
+end
+
 -- 计算字符长度（一个汉字算一个字符）
 function TS.len(str)
 	local _, count = string.gsub(str, "[^\128-\193]", "")
 	return count
 end
 
-return TS; 
+-- 对话框输出内容，方便调试
+function TS.dialog(...)
+	local message = ''
+	for i, v in pairs {...} do
+		message = message .. i .. ' = ' .. v .. "\r\n"
+	end
+	
+	dialog(message, 0)
+end
+
+-- 模拟人工输入
+function TS.simulationHumanInputText(text)
+	for i = 1, Util.utf8len(text) do
+		inputText(Util.utf8sub(text, i, 1));
+		mSleep(math.floor(math.random() * 1000))
+	end
+end
+
+return TS 
