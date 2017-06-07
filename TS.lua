@@ -176,8 +176,9 @@ end
 
 -- 模拟人工输入
 function TS.simulationHumanInputText(text)
-	for i = 1, Util.utf8len(text) do
-		inputText(Util.utf8sub(text, i, 1));
+	for i = 1, util.utf8len(text) do
+		inputText(util.utf8sub(text, i, 1));
+		math.randomseed(os.time())
 		mSleep(math.floor(math.random() * 1000))
 	end
 end
